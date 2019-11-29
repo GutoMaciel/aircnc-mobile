@@ -1,10 +1,118 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Image,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  AsyncStorage,
+} from 'react-native';
 
-export default function Login() {
+import api from '../services/api';
+
+import logo from '../assets/logo.png';
+
+export default function Login({navigation}) {
+  const [email, setEmail] = useState('');
+  const [techs, setTechs] = useState('');
+
+  async function handleSubmit() {
+    //email, techs
+    const response = await api.post('/sessions', {
+      email,
+    });
+
+    const {_id} = response.data;
+
+    await AsyncStorage.setItem('user', _id);
+    await AsyncStorage.setItem('techs', techs);
+
+    navigation.navigate('List');
+  }
+
   return (
-    <View>
-      <Text>Hello World</Text>
-    </View>
+    <KeyboardAvoidingView
+      enable={Platform.OS === 'ios'}
+      behavior="padding"
+      style={styles.container}>
+      <Image source={logo} />
+
+      <View style={styles.form}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Your Email"
+          placeholderTextColor="#999"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
+        />
+
+        <Text style={styles.label}>Technologies</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Technologies of interest"
+          placeholderTextColor="#999"
+          autoCapitalize="words"
+          autoCorrect={false}
+          value={techs}
+          onChangeText={setTechs}
+        />
+
+        <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+          <Text style={styles.buttonText}>Find Spots</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  label: {
+    fontWeight: 'bold',
+    color: '#444',
+    marginBottom: 8,
+  },
+
+  form: {
+    alignSelf: 'stretch',
+    paddingHorizontal: 30,
+    marginTop: 30,
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: '#444',
+    height: 44,
+    marginBottom: 20,
+    borderRadius: 2,
+  },
+
+  button: {
+    height: 42,
+    backgroundColor: '#f05a5b',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 2,
+  },
+
+  buttonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
