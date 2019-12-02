@@ -41,7 +41,7 @@ export default function Book({navigation}) {
       <Text style={styles.label}>Date to request</Text>
       <TextInput
         style={styles.input}
-        placeholder="Witch date do you want to request?"
+        placeholder="What date do you want to book?"
         placeholderTextColor="#999"
         autoCapitalize="words"
         autoCorrect={false}
